@@ -129,6 +129,11 @@ def _addOptions(addGroupFn, defaultStr):
     addOptionFn("--rescueJobsFrequency", dest="rescueJobsFrequency",
                       help=("Period of time to wait (in seconds) between checking for "
                             "missing/overlong jobs, that is jobs which get lost by the batch system. Expert parameter. (default is set by the batch system)"))
+    addOptionFn("--resume", dest="resume", action='store_true', default=False,
+                      help=("Pass this flag to resume a previous, incomplete job with an existing jobStore. defualt = %s" % defaultStr))
+    addOptionFn("--clean", dest="clean", choices=['always', 'onerror','never'], default='always',
+                      help=("Determines the deletion of the jobStore upon completion of the program. If you wish to be able to restart the run, "
+                            "choose \'never\'. Default=%s" % defaultStr))
 
     addOptionFn = addGroupFn("jobTree big batch system options",
                              "jobTree can employ a secondary batch system for running large memory/cpu jobs using the following arguments:")
@@ -223,6 +228,7 @@ def createConfig(options):
     config.attrib["max_memory"] = str(int(options.maxMemory))
     config.attrib["max_disk"] = str(int(options.maxDisk))
     config.attrib["scale"] = str(float(options.scale))
+    config.attrib["clean"] = options.clean
     if options.bigBatchSystem is not None:
         config.attrib["big_batch_system"] = options.bigBatchSystem
         config.attrib["big_memory_threshold"] = str(int(options.bigMemoryThreshold))
@@ -231,6 +237,8 @@ def createConfig(options):
         config.attrib["big_max_memory"] = str(int(options.bigMaxMemory))
     if options.stats:
         config.attrib["stats"] = ""
+    if options.resume:
+        config.attrib["resume"] = ""
     return config
 
 
