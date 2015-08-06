@@ -141,13 +141,18 @@ def main():
                 sys.path.append(e)
 
     setLogLevel(config.attrib["log_level"])
+    # Priority: Flag if set to non-default, then environment variable if set, then flag default
+    if "TMPDIR" in environment and config.attrib["work_dir"]!='/tmp':
+        tempRootDir = environment["TMPDIR"]
+    else:
+        tempRootDir= config.attrib["work_dir"]
 
     ##########################################
     #Setup the temporary directories.
     ##########################################
         
     #Dir to put all the temp files in.
-    localWorkerTempDir = getTempDirectory()
+    localWorkerTempDir = getTempDirectory(tempRootDir)
     
     ##########################################
     #Setup the logging
